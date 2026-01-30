@@ -5,6 +5,7 @@
     <meta http-equiv="refresh" content="60">
     <title>NexusAds | Digital Billboard</title>
     <style>
+        /* Grundlayout */
         body, html {
             margin: 0;
             padding: 0;
@@ -12,15 +13,16 @@
             height: 100%;
             background-color: #000;
             overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
 
-        .billboard {
+        .billboard-wrapper {
             position: relative;
             width: 100vw;
             height: 100vh;
         }
 
+        /* Die Werbeflächen */
         .ad-layer {
             position: absolute;
             top: 0;
@@ -29,56 +31,81 @@
             height: 100%;
             object-fit: contain;
             opacity: 0;
-            /* Gesamtdauer 21s (7s pro Bild) */
             animation: nexusFade 21s infinite ease-in-out;
         }
 
-        /* Timing für 3 Werbeplätze */
+        /* Timing für 3 Bilder (je 7 Sek) */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
         .ad-layer:nth-child(2) { animation-delay: 7s; }
         .ad-layer:nth-child(3) { animation-delay: 14s; }
 
         @keyframes nexusFade {
             0% { opacity: 0; }
-            5% { opacity: 1; }   /* Einblenden */
-            28% { opacity: 1; }  /* Sichtbar (ca. 6 Sek) */
-            33% { opacity: 0; }  /* Ausblenden */
+            5% { opacity: 1; }
+            28% { opacity: 1; }
+            33% { opacity: 0; }
             100% { opacity: 0; }
         }
 
-        /* NexusAds Branding */
-        .branding {
+        /* Das NexusAds Branding mit BLUR */
+        .branding-overlay {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             right: 30px;
             z-index: 100;
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid #00f2ff;
+            
+            /* Blur & Glas-Effekt */
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px); /* Erzeugt den Milchglas-Effekt */
+            -webkit-backdrop-filter: blur(12px);
+            
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
         .branding-text {
             color: #00f2ff;
             font-weight: bold;
-            font-size: 1rem;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+
+        /* Pulsierender Live-Indikator */
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ff004c;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 0 12px #ff004c;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
         }
     </style>
 </head>
 <body>
 
-    <div class="billboard">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe">
+    <div class="billboard-wrapper">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe" alt="Ad 1">
         
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7" alt="Ad 2">
         
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1xtAF9Kvg-htEOMMvZbQ07b7-7rkC1ZKR">
+        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1xtAF9Kvg-htEOMMvZbQ07b7-7rkC1ZKR" alt="NexusAds GIF">
 
-        <div class="branding">
-            <span class="branding-text">NexusAds LIVE</span>
+        <div class="branding-overlay">
+            <div class="live-dot"></div>
+            <div class="branding-text">NexusAds</div>
         </div>
     </div>
 
