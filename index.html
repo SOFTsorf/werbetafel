@@ -2,110 +2,80 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusAds | Digital Billboard</title>
-    <meta http-equiv="refresh" content="60">
     
     <style>
-        /* Grunddesign */
+        /* 1. DAS DESIGN (Hintergrund und Layout) */
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #050505; /* Fast schwarz für edlen Look */
-            overflow: hidden;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%;
+            background-color: #000; /* Hintergrund ist immer schwarz */
+            overflow: hidden; /* Keine Scrollbalken */
+            font-family: sans-serif;
         }
 
-        /* Hauptcontainer */
-        .nexus-billboard {
+        .billboard-wrapper {
             position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100vw; height: 100vh;
         }
 
-        /* Die Werbebilder / GIFs */
+        /* 2. DIE BILDER-EINSTELLUNGEN */
         .ad-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Bild wird perfekt eingepasst */
-            opacity: 0;
-            /* Sanfter Crossfade-Effekt */
-            animation: nexusFade 20s infinite ease-in-out;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* EINSTELLUNG: 'contain' zeigt das ganze Bild (mit Rändern), 
+               'cover' füllt den ganzen Bildschirm (schneidet evtl. etwas ab) */
+            object-fit: contain; 
+            opacity: 0; /* Bilder sind erst unsichtbar */
+            transition: opacity 1.5s ease-in-out; /* Geschwindigkeit des Überblenders */
         }
 
-        /* Timing: Bild 1 und Bild 2 wechseln sich ab */
-        .ad-layer:nth-child(1) {
-            animation-delay: 0s;
+        /* Dieses Wort 'active' wird vom Script vergeben, um das Bild anzuzeigen */
+        .ad-layer.active {
+            opacity: 1;
         }
 
-        .ad-layer:nth-child(2) {
-            animation-delay: 10s;
-        }
-
-        /* Animation für die Überblendung */
-        @keyframes nexusFade {
-            0% { opacity: 0; transform: scale(1.02); }
-            5% { opacity: 1; transform: scale(1); }   /* Einblenden & leichter Zoom-In */
-            45% { opacity: 1; }                        /* Halten */
-            55% { opacity: 0; }                        /* Ausblenden */
-            100% { opacity: 0; }
-        }
-
-        /* NexusAds Branding Corner */
+        /* 3. DAS BRANDING (Logo unten rechts) */
         .branding-overlay {
             position: absolute;
-            bottom: 20px;
-            right: 30px;
+            bottom: 25px; right: 30px;
             z-index: 100;
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px;
+            display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px); /* Edler Glaseffekt */
+            padding: 12px 25px;
             border-radius: 50px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
-        }
-
-        .branding-text {
-            color: #00f2ff; /* Electric Blue */
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            color: #00f2ff; /* Leuchtendes Blau */
             font-weight: bold;
             letter-spacing: 2px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
-        /* Kleiner pulsierender "Live" Punkt */
+        /* Der blinkende rote Punkt */
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px; height: 10px;
             background-color: #ff004c;
             border-radius: 50%;
-            margin-right: 12px;
-            box-shadow: 0 0 8px #ff004c;
-            animation: pulse 1.5s infinite;
+            margin-right: 15px;
+            box-shadow: 0 0 12px #ff004c;
+            animation: pulse 2s infinite;
         }
-
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <div class="nexus-billboard">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH"> alt=Ad1
-        <<img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb"> alt=Ad 2
+    <div class="billboard-wrapper">
+        
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH" data-duration="8">
+        
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb" data-duration="10">
+        
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/h/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe/view?usp=drivesdk data-duration="5">
 
 
         <div class="branding-overlay">
@@ -113,6 +83,36 @@
             <div class="branding-text">NexusAds</div>
         </div>
     </div>
+
+    <script>
+        /* 4. DIE LOGIK (Das Gehirn der Seite) */
+        const ads = document.querySelectorAll('.ad-layer');
+        let current = 0;
+
+        function cycleAds() {
+            // 1. Aktuelles Bild unsichtbar machen
+            ads[current].classList.remove('active');
+
+            // 2. Zum nächsten Index springen (oder zurück zu 0)
+            current = (current + 1) % ads.length;
+
+            // 3. Nächstes Bild sichtbar machen
+            const nextAd = ads[current];
+            nextAd.classList.add('active');
+
+            // 4. Dauer aus 'data-duration' auslesen
+            const time = nextAd.getAttribute('data-duration') * 1000;
+
+            // 5. Diese Funktion nach der Zeit 'time' wiederholen
+            setTimeout(cycleAds, time);
+        }
+
+        // Der erste Start
+        if (ads.length > 0) {
+            ads[0].classList.add('active');
+            setTimeout(cycleAds, ads[0].getAttribute('data-duration') * 1000);
+        }
+    </script>
 
 </body>
 </html>
