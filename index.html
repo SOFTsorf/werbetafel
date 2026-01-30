@@ -6,33 +6,18 @@
     <title>NexusAds | Digital Billboard</title>
     <style>
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; overflow: hidden;
+            font-family: sans-serif;
         }
-
-        .billboard-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-
+        .billboard { position: relative; width: 100vw; height: 100vh; }
         .ad-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* 'cover' füllt den Bildschirm, 'contain' zeigt das ganze Bild mit Rändern */
+            object-fit: contain; 
             opacity: 0;
             animation: nexusFade 16s infinite ease-in-out;
         }
-
-        /* Timing für 2 GIFs */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
         .ad-layer:nth-child(2) { animation-delay: 8s; }
 
@@ -44,59 +29,23 @@
             100% { opacity: 0; }
         }
 
-        /* Branding mit Blur-Effekt */
-        .branding-overlay {
-            position: absolute;
-            bottom: 25px;
-            right: 30px;
-            z-index: 100;
-            display: flex;
-            align-items: center;
+        .branding {
+            position: absolute; bottom: 25px; right: 30px; z-index: 100;
+            display: flex; align-items: center;
             background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 12px 25px;
-            border-radius: 50px;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 12px 25px; border-radius: 50px;
             border: 1px solid rgba(0, 242, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-        }
-
-        .branding-text {
-            color: #00f2ff;
-            font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #ff004c;
-            border-radius: 50%;
-            margin-right: 15px;
-            box-shadow: 0 0 12px #ff004c;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.7; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.7; transform: scale(0.9); }
+            color: #00f2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
+    <div class="billboard">
+        <img class="ad-layer" src="ad1.gif">
+        <img class="ad-layer" src="ad2.gif">
 
-    <div class="billboard-wrapper">
-        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH">
-        
-        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb">
-
-        <div class="branding-overlay">
-            <div class="live-dot"></div>
-            <div class="branding-text">NexusAds</div>
-        </div>
+        <div class="branding">NexusAds</div>
     </div>
-
 </body>
 </html>
