@@ -5,13 +5,14 @@
     <title>NexusAds | Digital Billboard</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
-        .billboard { position: relative; width: 100vw; height: 100vh; }
+        .billboard { position: relative; width: 100vw; height: 100vh; cursor: none; }
+        
+        /* Die Bilder */
         .ad-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: contain; opacity: 0;
             animation: nexusLoop 32s infinite ease-in-out;
         }
-        /* Timing für deine 4 Bilder */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
         .ad-layer:nth-child(2) { animation-delay: 8s; }
         .ad-layer:nth-child(3) { animation-delay: 16s; }
@@ -24,6 +25,27 @@
             25% { opacity: 0; }
             100% { opacity: 0; }
         }
+
+        /* Vollbild Button oben rechts */
+        #fullscreen-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 5px;
+            padding: 8px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #fullscreen-btn:hover { background: rgba(0, 242, 255, 0.2); }
+        #fullscreen-btn svg { fill: #00f2ff; width: 20px; height: 20px; }
+
+        /* Branding */
         .branding {
             position: absolute; bottom: 25px; right: 30px; z-index: 100;
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px);
@@ -35,34 +57,56 @@
 </head>
 <body>
 
-    <div class="billboard">
+    <div class="billboard" id="main-content">
+        <div id="fullscreen-btn" onclick="toggleFullscreen()">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        </div>
+
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1Nc9w9Zw-7hhIFbb8Yorln7Jgjz67nog3">
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
+        
         <div class="branding">NexusAds</div>
     </div>
 
     <script>
-        // --- WAKE LOCK LOGIK (Bildschirm wach halten) ---
+        const btn = document.getElementById('fullscreen-btn');
         let wakeLock = null;
 
-        async function requestWakeLock() {
-            try {
-                // Nur wenn der Browser das unterstützt
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Bildschirm bleibt an!');
-                }
-            } catch (err) {
-                console.log('Wachhalten fehlgeschlagen: ' + err.message);
+        // Vollbild-Logik
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Fehler beim Vollbild-Modus: ${err.message}`);
+                });
+                requestWakeLock(); // Wachhalten aktivieren bei Klick
             }
         }
 
-        // Starten, wenn die Seite geladen wird
-        requestWakeLock();
+        // Icon verstecken, wenn im Vollbild
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                btn.style.opacity = '0';
+                btn.style.pointerEvents = 'none';
+            } else {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            }
+        });
 
-        // Falls man den Tab kurz wechselt und zurückkommt, wieder aktivieren
+        // Wake Lock (Display anlassen)
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) {
+                console.log('WakeLock Error:', err);
+            }
+        }
+
+        // Automatisches Re-Aktivieren
         document.addEventListener('visibilitychange', () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
