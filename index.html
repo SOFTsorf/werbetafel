@@ -2,41 +2,36 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="60">
     <title>NexusAds | Digital Billboard</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; }
-        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        .billboard { position: relative; width: 100vw; height: 100vh; }
         .ad-layer {
-            position: absolute; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: contain; opacity: 0;
             animation: nexusFade 16s infinite ease-in-out;
         }
-        
-        /* Hier exakt auf die Namen achten! */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
         .ad-layer:nth-child(2) { animation-delay: 8s; }
-
         @keyframes nexusFade {
             0%, 100% { opacity: 0; }
             5%, 45% { opacity: 1; }
-            55% { opacity: 0; }
+            50%, 95% { opacity: 0; }
         }
-
         .branding {
-            position: absolute; bottom: 20px; right: 20px; z-index: 10;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 10px 20px; border-radius: 30px;
-            border: 1px solid rgba(0, 242, 255, 0.5);
-            color: #00f2ff; font-family: sans-serif; font-weight: bold;
+            position: absolute; bottom: 25px; right: 30px; z-index: 100;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); padding: 12px 25px;
+            border-radius: 50px; border: 1px solid rgba(0, 242, 255, 0.4);
+            color: #00f2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
     <div class="billboard">
-        <img class="ad-layer" src="ad1.gif" onerror="this.style.border='5px solid red'">
-        <img class="ad-layer" src="ad2.gif" onerror="this.style.border='5px solid red'">
+        <img class="ad-layer" src="./ad1.gif" alt="Werbung 1">
+        <img class="ad-layer" src="./ad2.gif" alt="Werbung 2">
 
         <div class="branding">NexusAds</div>
     </div>
