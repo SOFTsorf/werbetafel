@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="60">
+    <title>Meine Werbetafel</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slider {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .img-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0;
+            animation: showHide 20s infinite;
+        }
+
+        /* Timing: Erstes Bild 0s Verzögerung, zweites Bild 10s Verzögerung */
+        .img-slide:nth-child(1) { animation-delay: 0s; }
+        .img-slide:nth-child(2) { animation-delay: 10s; }
+
+        @keyframes showHide {
+            0% { opacity: 0; }
+            5% { opacity: 1; }   /* Einblenden */
+            45% { opacity: 1; }  /* Sichtbar bleiben */
+            50% { opacity: 0; }  /* Ausblenden */
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slider">
+        <img class="img-slide" src="https://lh3.googleusercontent.com/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe">
+        
+        <img class="img-slide" src="https://lh3.googleusercontent.com/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7">
+    </div>
+
+</body>
+</html>
