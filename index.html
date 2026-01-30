@@ -3,115 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>NexusAds | Digital Billboard</title>
-    
     <style>
-        /* 1. DAS DESIGN (Hintergrund und Layout) */
-        body, html {
-            margin: 0; padding: 0; 
-            width: 100%; height: 100%;
-            background-color: #000; /* Hintergrund ist immer schwarz */
-            overflow: hidden; /* Keine Scrollbalken */
-            font-family: sans-serif;
-        }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        
+        .billboard { position: relative; width: 100vw; height: 100vh; }
 
-        .billboard-wrapper {
-            position: relative;
-            width: 100vw; height: 100vh;
-        }
-
-        /* 2. DIE BILDER-EINSTELLUNGEN */
         .ad-layer {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            /* EINSTELLUNG: 'contain' zeigt das ganze Bild (mit Rändern), 
-               'cover' füllt den ganzen Bildschirm (schneidet evtl. etwas ab) */
-            object-fit: contain; 
-            opacity: 0; /* Bilder sind erst unsichtbar */
-            transition: opacity 1.5s ease-in-out; /* Geschwindigkeit des Überblenders */
+            object-fit: contain;
+            opacity: 0;
+            /* 4 Bilder à 8 Sekunden = 32s Gesamtdauer */
+            animation: nexusLoop 32s infinite ease-in-out;
         }
 
-        /* Dieses Wort 'active' wird vom Script vergeben, um das Bild anzuzeigen */
-        .ad-layer.active {
-            opacity: 1;
+        /* Timing für 4 Bilder */
+        .ad-layer:nth-child(1) { animation-delay: 0s; }
+        .ad-layer:nth-child(2) { animation-delay: 8s; }
+        .ad-layer:nth-child(3) { animation-delay: 16s; }
+        .ad-layer:nth-child(4) { animation-delay: 24s; }
+
+        @keyframes nexusLoop {
+            0% { opacity: 0; }
+            3% { opacity: 1; }   /* Einblenden */
+            22% { opacity: 1; }  /* Anzeigen */
+            25% { opacity: 0; }  /* Ausblenden */
+            100% { opacity: 0; }
         }
 
-        /* 3. DAS BRANDING (Logo unten rechts) */
-        .branding-overlay {
-            position: absolute;
-            bottom: 25px; right: 30px;
-            z-index: 100;
-            display: flex; align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(12px); /* Edler Glaseffekt */
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 242, 255, 0.4);
-            color: #00f2ff; /* Leuchtendes Blau */
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        /* Der blinkende rote Punkt */
-        .live-dot {
-            width: 10px; height: 10px;
-            background-color: #ff004c;
-            border-radius: 50%;
-            margin-right: 15px;
-            box-shadow: 0 0 12px #ff004c;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
+        /* Branding */
+        .branding {
+            position: absolute; bottom: 25px; right: 30px; z-index: 100;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); padding: 12px 25px; 
+            border-radius: 50px; border: 1px solid rgba(0, 242, 255, 0.4);
+            color: #00f2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="billboard-wrapper">
-        
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH" data-duration="8", alt=Ad1>
-        
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb" data-duration="10", ald=Ad2>
-        
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe/view?usp=drivesdk" data-duration="5">
+    <div class="billboard">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1Nc9w9Zw-7hhIFbb8Yorln7Jgjz67nog3">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
 
-        <div class="branding-overlay">
-            <div class="live-dot"></div>
-            <div class="branding-text">NexusAds</div>
-        </div>
+        <div class="branding">NexusAds</div>
     </div>
-
-    <script>
-        /* 4. DIE LOGIK (Das Gehirn der Seite) */
-        const ads = document.querySelectorAll('.ad-layer');
-        let current = 0;
-
-        function cycleAds() {
-            // 1. Aktuelles Bild unsichtbar machen
-            ads[current].classList.remove('active');
-
-            // 2. Zum nächsten Index springen (oder zurück zu 0)
-            current = (current + 1) % ads.length;
-
-            // 3. Nächstes Bild sichtbar machen
-            const nextAd = ads[current];
-            nextAd.classList.add('active');
-
-            // 4. Dauer aus 'data-duration' auslesen
-            const time = nextAd.getAttribute('data-duration') * 1000;
-
-            // 5. Diese Funktion nach der Zeit 'time' wiederholen
-            setTimeout(cycleAds, time);
-        }
-
-        // Der erste Start
-        if (ads.length > 0) {
-            ads[0].classList.add('active');
-            setTimeout(cycleAds, ads[0].getAttribute('data-duration') * 1000);
-        }
-    </script>
 
 </body>
 </html>
