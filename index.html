@@ -22,7 +22,7 @@
             height: 100vh;
         }
 
-        /* Die Werbeflächen */
+        /* Die Werbeflächen (GIFs) */
         .ad-layer {
             position: absolute;
             top: 0;
@@ -31,23 +31,23 @@
             height: 100%;
             object-fit: contain;
             opacity: 0;
-            animation: nexusFade 21s infinite ease-in-out;
+            /* Gesamtdauer 20s (10s pro GIF) */
+            animation: nexusFade 20s infinite ease-in-out;
         }
 
-        /* Timing für 3 Bilder (je 7 Sek) */
+        /* Timing für 2 GIFs */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
-        .ad-layer:nth-child(2) { animation-delay: 7s; }
-        .ad-layer:nth-child(3) { animation-delay: 14s; }
+        .ad-layer:nth-child(2) { animation-delay: 10s; }
 
         @keyframes nexusFade {
             0% { opacity: 0; }
-            5% { opacity: 1; }
-            28% { opacity: 1; }
-            33% { opacity: 0; }
+            5% { opacity: 1; }   /* Einblenden */
+            45% { opacity: 1; }  /* Sichtbar bleiben */
+            55% { opacity: 0; }  /* Sanftes Ausblenden während das andere kommt */
             100% { opacity: 0; }
         }
 
-        /* Das NexusAds Branding mit BLUR */
+        /* NexusAds Branding mit Blur-Effekt */
         .branding-overlay {
             position: absolute;
             bottom: 25px;
@@ -55,12 +55,9 @@
             z-index: 100;
             display: flex;
             align-items: center;
-            
-            /* Blur & Glas-Effekt */
             background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(12px); /* Erzeugt den Milchglas-Effekt */
+            backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            
             padding: 12px 25px;
             border-radius: 50px;
             border: 1px solid rgba(0, 242, 255, 0.4);
@@ -76,7 +73,6 @@
             text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
         }
 
-        /* Pulsierender Live-Indikator */
         .live-dot {
             width: 10px;
             height: 10px;
@@ -97,11 +93,9 @@
 <body>
 
     <div class="billboard-wrapper">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe" alt="Ad 1">
+        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH" alt="NexusAds GIF 1">
         
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7" alt="Ad 2">
-        
-        <img class="ad-layer" src="https://drive.google.com/file/d/1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH/" alt="NexusAds GIF">
+        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb" alt="NexusAds GIF 2">
 
         <div class="branding-overlay">
             <div class="live-dot"></div>
