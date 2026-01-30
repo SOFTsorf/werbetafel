@@ -2,74 +2,115 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusAds | Digital Billboard</title>
     <meta http-equiv="refresh" content="60">
+    
     <style>
-        /* NexusAds Design-Grundlagen */
+        /* Grunddesign */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000; /* Tiefschwarz für besten Kontrast */
+            background-color: #050505; /* Fast schwarz für edlen Look */
             overflow: hidden;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        .billboard-container {
+        /* Hauptcontainer */
+        .nexus-billboard {
             position: relative;
             width: 100vw;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .nexus-slide {
+        /* Die Werbebilder / GIFs */
+        .ad-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Erhält das Format deiner Bilder/GIFs */
+            object-fit: contain; /* Bild wird perfekt eingepasst */
             opacity: 0;
-            /* Sanfter Crossfade über 20 Sekunden Gesamtdauer */
+            /* Sanfter Crossfade-Effekt */
             animation: nexusFade 20s infinite ease-in-out;
         }
 
-        /* Timing für die beiden Werbeplätze */
-        .nexus-slide:nth-child(1) {
+        /* Timing: Bild 1 und Bild 2 wechseln sich ab */
+        .ad-layer:nth-child(1) {
             animation-delay: 0s;
         }
 
-        .nexus-slide:nth-child(2) {
+        .ad-layer:nth-child(2) {
             animation-delay: 10s;
         }
 
-        /* Die Magie der Überblendung */
+        /* Animation für die Überblendung */
         @keyframes nexusFade {
-            0% { opacity: 0; }
-            5% { opacity: 1; }   /* Schnelles Einblenden */
-            45% { opacity: 1; }  /* Bleibt sichtbar */
-            55% { opacity: 0; }  /* Sanftes Ausblenden während das andere kommt */
+            0% { opacity: 0; transform: scale(1.02); }
+            5% { opacity: 1; transform: scale(1); }   /* Einblenden & leichter Zoom-In */
+            45% { opacity: 1; }                        /* Halten */
+            55% { opacity: 0; }                        /* Ausblenden */
             100% { opacity: 0; }
         }
 
-        /* Optional: Kleiner NexusAds Branding-Hinweis unten rechts (dezent) */
-        .branding {
+        /* NexusAds Branding Corner */
+        .branding-overlay {
             position: absolute;
-            bottom: 10px;
-            right: 15px;
-            color: rgba(255, 255, 255, 0.3);
+            bottom: 20px;
+            right: 30px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .branding-text {
+            color: #00f2ff; /* Electric Blue */
+            font-weight: bold;
+            letter-spacing: 2px;
             font-size: 1.2rem;
-            z-index: 10;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        /* Kleiner pulsierender "Live" Punkt */
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ff004c;
+            border-radius: 50%;
+            margin-right: 12px;
+            box-shadow: 0 0 8px #ff004c;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <div class="branding">NexusAds</div>
+    <div class="nexus-billboard">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1jNudUhSZDHt44V9bn2YCxXmSs1hAAhqe" alt="Ad 1">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/u/0/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7" alt="Ad 2">
 
-    <div class="billboard-container">
-        <img class="nexus-slide" src="https://lh3.googleusercontent.com/d/1xtAF9Kvg-htEOMMvZbQ07b7-7rkC1ZKR/">
-        <img class="nexus-slide" src="https://lh3.googleusercontent.com/d/1ySWIaBefa_VEtRF4EbGZWmsBrDQ05rO7">
+        <div class="branding-overlay">
+            <div class="live-dot"></div>
+            <div class="branding-text">NexusAds</div>
+        </div>
     </div>
 
 </body>
