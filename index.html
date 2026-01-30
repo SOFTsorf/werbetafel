@@ -5,7 +5,6 @@
     <meta http-equiv="refresh" content="60">
     <title>NexusAds | Digital Billboard</title>
     <style>
-        /* Grundlayout */
         body, html {
             margin: 0;
             padding: 0;
@@ -13,7 +12,7 @@
             height: 100%;
             background-color: #000;
             overflow: hidden;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .billboard-wrapper {
@@ -22,7 +21,6 @@
             height: 100vh;
         }
 
-        /* Die Werbeflächen (GIFs) */
         .ad-layer {
             position: absolute;
             top: 0;
@@ -31,23 +29,23 @@
             height: 100%;
             object-fit: contain;
             opacity: 0;
-            /* Gesamtdauer 20s (10s pro GIF) */
-            animation: nexusFade 20s infinite ease-in-out;
+            /* Gesamtdauer 16s (8s pro GIF) */
+            animation: nexusFade 16s infinite ease-in-out;
         }
 
         /* Timing für 2 GIFs */
         .ad-layer:nth-child(1) { animation-delay: 0s; }
-        .ad-layer:nth-child(2) { animation-delay: 10s; }
+        .ad-layer:nth-child(2) { animation-delay: 8s; }
 
         @keyframes nexusFade {
             0% { opacity: 0; }
-            5% { opacity: 1; }   /* Einblenden */
-            45% { opacity: 1; }  /* Sichtbar bleiben */
-            55% { opacity: 0; }  /* Sanftes Ausblenden während das andere kommt */
+            5% { opacity: 1; }
+            45% { opacity: 1; }
+            50% { opacity: 0; }
             100% { opacity: 0; }
         }
 
-        /* NexusAds Branding mit Blur-Effekt */
+        /* NexusAds Branding mit Blur */
         .branding-overlay {
             position: absolute;
             bottom: 25px;
@@ -68,9 +66,7 @@
             color: #00f2ff;
             font-weight: bold;
             letter-spacing: 2px;
-            font-size: 1.1rem;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
         }
 
         .live-dot {
@@ -84,18 +80,18 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.7; }
+            0% { opacity: 0.7; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.7; transform: scale(0.9); }
         }
     </style>
 </head>
 <body>
 
     <div class="billboard-wrapper">
-        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH" alt="NexusAds GIF 1">
+        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1ltfinCgVN-zEgjxKLfL_zkXePBIaFftH">
         
-        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb" alt="NexusAds GIF 2">
+        <img class="ad-layer" src="https://drive.google.com/uc?export=view&id=1y9OOt5-p3iUbF6Up5eVjgBPnBHiG42lb">
 
         <div class="branding-overlay">
             <div class="live-dot"></div>
