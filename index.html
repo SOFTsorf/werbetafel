@@ -20,13 +20,13 @@
         .active { display: flex !important; }
         img.active { display: block !important; object-fit: contain; background: #000; }
 
-        /* FIX: INFO LAYER MIT ABSTAND NACH UNTEN */
+        /* FIX: INFO LAYER MIT ABSTAND NACH UNTEN GEGEN ÜBERLAPPUNG */
         .info-layer {
             background-size: cover;
             background-position: center;
             flex-direction: column;
             justify-content: space-between; 
-            padding: 80px 80px 180px 80px; /* Puffer für den Ticker */
+            padding: 80px 80px 180px 80px; 
             box-sizing: border-box;
         }
 
@@ -42,7 +42,7 @@
             align-self: flex-start;
         }
 
-        /* TICKER DESIGN & SPEED */
+        /* TICKER DESIGN & SPEED (15s) */
         .news-ticker {
             position: absolute; bottom: 12px; left: 0; width: 100%;
             background: rgba(0, 0, 0, 0.9); height: 80px;
@@ -53,7 +53,7 @@
         .ticker-wrapper { display: flex; white-space: nowrap; }
         .ticker-text {
             font-size: 2.2rem; font-weight: 400; padding-right: 100px;
-            animation: marquee 15s linear infinite; /* Schneller als vorher */
+            animation: marquee 15s linear infinite; 
             display: inline-block;
         }
 
@@ -102,7 +102,7 @@
                     <strong>Koblenz</strong> <span>|</span> <div id="clock">00:00</div>
                 </div>
                 <div id="temp-big">--°</div>
-                <div class="weather-text" id="weather-text">Lädt...</div>
+                <div class="weather-desc" id="weather-text">Lädt...</div>
             </div>
             <div class="weather-details" id="weather-sub">
                 ↑ --° / ↓ --° <br>
@@ -186,7 +186,7 @@
                     document.getElementById('ticker-1').textContent = fullText;
                     document.getElementById('ticker-2').textContent = fullText;
                 }
-            } catch (e) { console.error("News-Fehler"); }
+            } catch (e) { console.error("News Fehler"); }
         }
         fetchNews();
         setInterval(fetchNews, 1800000);
