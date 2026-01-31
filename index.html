@@ -2,103 +2,69 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NexusAds | Digital Billboard Koblenz</title>
     <style>
         /* GRUNDLAYOUT */
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; 
+            font-family: 'Segoe UI', sans-serif; color: white; 
         }
         
         .billboard { position: relative; width: 100vw; height: 100vh; }
         
-        /* BILDER & INFO-LAYER */
+        /* LAYER-STEUERUNG */
         .ad-layer, .info-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: none; 
         }
 
-        .ad-layer { object-fit: cover; } /* Cover füllt den Screen besser aus */
+        .ad-layer { object-fit: contain; background: #000; }
 
-        /* WETTER & UHRZEIT DESIGN (SCREENSHOT LOOK) */
+        /* WETTER-DESIGN (SCREENSHOT-STYLING) */
         .info-layer {
-            /* Hintergrundbild für die Atmosphäre */
-            background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3)), 
-                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80');
+            /* Hintergrundbild für den Wetter-Screen */
+            background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            padding: 60px 80px;
+            padding: 80px;
             box-sizing: border-box;
         }
 
-        .info-content {
-            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            animation: fadeIn 1.5s ease-out;
-        }
+        .info-content { text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
 
-        /* Kopfzeile: Ort | Uhrzeit */
         .location-header {
-            display: flex;
-            align-items: center;
-            font-size: 3.5rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            letter-spacing: -1px;
+            display: flex; align-items: center;
+            font-size: 3.5rem; font-weight: 500; margin-bottom: 20px;
         }
 
-        .location-header span {
-            margin: 0 20px;
-            font-weight: 200;
-            opacity: 0.8;
-        }
+        .location-header span { margin: 0 20px; font-weight: 200; opacity: 0.7; }
 
         #clock { font-weight: 300; }
 
-        /* Große Temperatur */
-        #temp-big {
-            font-size: 18rem;
-            font-weight: 400;
-            line-height: 0.9;
-            margin-left: -10px; /* Optischer Ausgleich */
+        #temp-big { 
+            font-size: 16rem; font-weight: 400; line-height: 0.8; 
+            margin: 20px 0 20px -10px; 
         }
 
-        /* Wetterbeschreibung */
-        .weather-desc {
-            font-size: 5rem;
-            font-weight: 300;
-            margin-bottom: 20px;
-        }
+        .weather-desc { font-size: 4.5rem; font-weight: 300; margin-bottom: 20px; }
 
-        /* Details (Min/Max/Gefühlt) */
-        .weather-details {
-            font-size: 2.2rem;
-            font-weight: 300;
-            line-height: 1.4;
-            opacity: 0.9;
-        }
+        .weather-details { font-size: 2.2rem; font-weight: 300; opacity: 0.9; line-height: 1.4; }
 
-        /* BRANDING UNTEN RECHTS */
+        /* BRANDING */
         .branding {
             position: absolute; bottom: 30px; right: 40px; z-index: 100;
             color: white; font-weight: bold; letter-spacing: 4px; font-size: 1rem;
             opacity: 0.4;
         }
 
-        /* Hilfsklassen */
         .active { display: flex !important; }
         img.active { display: block !important; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* VOLLBILD BUTTON */
         #fs-btn {
             position: absolute; top: 20px; right: 20px; z-index: 1000;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3);
@@ -115,8 +81,12 @@
             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
 
-        <img class="ad-layer" src="https://via.placeholder.com/1920x1080/001122/ffffff?text=AD+SPACE+1">
-        <img class="ad-layer" src="https://via.placeholder.com/1920x1080/002211/ffffff?text=AD+SPACE+2">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1Nc9w9Zw-7hhIFbb8Yorln7Jgjz67nog3">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/ID">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1MdvnP2ikiwsr2xIxmMRzdZ5O9Zc6mFLn">
 
         <div class="info-layer">
             <div class="info-content">
@@ -161,31 +131,19 @@
 
         async function fetchWeather() {
             try {
-                // Koordinaten für Koblenz: 50.35, 7.59
-                const url = 'https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin';
-                const res = await fetch(url);
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
                 const data = await res.json();
                 
-                const currentTemp = Math.round(data.current_weather.temperature);
-                const maxTemp = Math.round(data.daily.temperature_2m_max[0]);
-                const minTemp = Math.round(data.daily.temperature_2m_min[0]);
+                const temp = Math.round(data.current_weather.temperature);
+                const max = Math.round(data.daily.temperature_2m_max[0]);
+                const min = Math.round(data.daily.temperature_2m_min[0]);
                 
-                document.getElementById('temp-big').textContent = `${currentTemp}°`;
-                document.getElementById('weather-sub').innerHTML = `↑ ${maxTemp}° / ↓ ${minTemp}° <br> Gefühlt wie ${currentTemp - 2}°`;
+                document.getElementById('temp-big').textContent = `${temp}°`;
+                document.getElementById('weather-sub').innerHTML = `↑ ${max}° / ↓ ${min}° <br> Gefühlt wie ${temp}°`;
                 
-                // Wettercodes Mapper
-                const code = data.current_weather.weathercode;
-                const weatherMap = {
-                    0: "Sonnig", 1: "Klar", 2: "Heiter", 3: "Bedeckt", 
-                    45: "Neblig", 48: "Raureif", 51: "Nieselregen", 
-                    61: "Regen", 71: "Schneefall", 95: "Gewitter"
-                };
-                document.getElementById('weather-text').textContent = weatherMap[code] || "Bedeckt";
-
-            } catch (e) { 
-                console.error("Wetterfehler:", e);
-                document.getElementById('weather-text').textContent = "Koblenz"; 
-            }
+                const weatherMap = { 0: "Sonnig", 1: "Klar", 2: "Heiter", 3: "Bedeckt", 45: "Neblig", 61: "Regen" };
+                document.getElementById('weather-text').textContent = weatherMap[data.current_weather.weathercode] || "Bedeckt";
+            } catch (e) { document.getElementById('weather-text').textContent = "Koblenz"; }
         }
         fetchWeather();
         setInterval(fetchWeather, 600000);
@@ -193,15 +151,9 @@
         function goFull() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
-                if ('wakeLock' in navigator) {
-                    navigator.wakeLock.request('screen').catch(console.error);
-                }
+                if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(console.error);
             }
         }
-        
-        document.addEventListener('fullscreenchange', () => {
-            document.getElementById('fs-btn').style.display = document.fullscreenElement ? 'none' : 'flex';
-        });
     </script>
 </body>
 </html>
