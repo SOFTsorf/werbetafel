@@ -9,10 +9,9 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
             font-family: 'Segoe UI', Roboto, sans-serif; color: white; 
-            user-select: none;
         }
         
-        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; cursor: pointer; }
+        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
         
         .ad-layer, .info-layer {
             position: absolute; 
@@ -23,7 +22,7 @@
         }
 
         .active { display: flex !important; }
-        img.active { display: block !important; object-fit: cover; width: 100%; height: calc(100% - 80px); background: #000; }
+        img.active { display: block !important; object-fit: contain; background: #000; }
 
         .info-layer {
             background-size: cover;
@@ -75,34 +74,22 @@
             display: flex; align-items: center; justify-content: center;
         }
         :fullscreen #fs-btn { display: none; }
-
-        /* HILFE MODAL */
-        #help-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.95); z-index: 5000; flex-direction: column; 
-            align-items: center; justify-content: center; text-align: center;
-        }
-        .modal-card {
-            border: 4px solid #d4ff00; padding: 50px; border-radius: 30px; background: #111;
-        }
-        .modal-btn {
-            padding: 25px 50px; font-size: 2.5rem; font-weight: bold; border-radius: 15px; 
-            cursor: pointer; border: none; margin: 15px; transition: transform 0.2s;
-        }
-        .btn-ja { background: #d4ff00; color: black; }
-        .btn-nein { background: #444; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="billboard" id="billboard-main">
-        <div id="fs-btn" onclick="goFull(event)">
+    <div class="billboard">
+        <div id="fs-btn" onclick="goFull()">
             <svg viewBox="0 0 24 24" width="25" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
 
-        <img class="ad-layer" src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80">
-        <img class="ad-layer" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80">
-        <img class="ad-layer" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=1200&q=80">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1n3D4UjOFsC79q_84j7xTerzJCTcN6rQN">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1mf257fiGBiJIpiK5ZGPal8fNrA4rFn7x">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1dSeQ4aQKBD4F5K-ch0iL3otBS6Croumk">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1MdvnP2ikiwsr2xIxmMRzdZ5O9Zc6mFLn">
 
         <div class="info-layer" id="weather-bg">
             <div class="info-content">
@@ -123,26 +110,12 @@
         </div>
     </div>
 
-    <div id="help-modal">
-        <div class="modal-card">
-            <h2 style="font-size: 4rem; margin-bottom: 20px; color: #d4ff00;">Hilfe holen</h2>
-            <p style="font-size: 2rem; margin-bottom: 40px;">Benötigst du Hilfe bei einem Produkt oder etwas anderem?</p>
-            <div>
-                <button class="modal-btn btn-ja" onclick="confirmHelp(event)">JA</button>
-                <button class="modal-btn btn-nein" onclick="closeHelp(event)">Abbrechen</button>
-            </div>
-        </div>
-    </div>
-
-    <audio id="help-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-
     <script>
         let current = 0;
         const elements = document.querySelectorAll('.ad-layer, .info-layer');
         const duration = 8000;
         let wakeLock = null;
 
-        // Rotation der Inhalte
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
@@ -151,7 +124,6 @@
         setInterval(showNext, duration);
         showNext();
 
-        // Uhrzeit
         function updateTime() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -159,64 +131,32 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // --- HILFE LOGIK ---
-        const modal = document.getElementById('help-modal');
-        const sound = document.getElementById('help-sound');
-
-        document.getElementById('billboard-main').addEventListener('click', (e) => {
-            if (e.target.closest('#fs-btn')) return;
-            modal.style.display = 'flex';
-        });
-
-        function closeHelp(e) {
-            e.stopPropagation();
-            modal.style.display = 'none';
-        }
-
-        function confirmHelp(e) {
-            e.stopPropagation();
-            sound.play(); // Hilfe-Ton
-            
-            const card = document.querySelector('.modal-card');
-            const oldContent = card.innerHTML;
-            card.innerHTML = "<h2 style='color:#d4ff00; font-size:3.5rem;'>Hilfe gerufen!</h2><p style='font-size:2rem;'>Ein Mitarbeiter ist auf dem Weg.</p>";
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                card.innerHTML = oldContent;
-            }, 4000);
-        }
-
-        // Fullscreen & WakeLock
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
         }
 
-        function goFull(e) {
-            e.stopPropagation();
+        function goFull() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().then(requestWakeLock);
             }
         }
 
-        // Wetter API
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
                 const data = await res.json();
                 document.getElementById('temp-big').textContent = Math.round(data.current_weather.temperature) + '°';
-                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° | Koblenz`;
+                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° | Gefühlt wie ${Math.round(data.current_weather.temperature)}°`;
                 const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 45: "Neblig", 61: "Regen", 95: "Gewitter" };
                 document.getElementById('weather-text').textContent = codes[data.current_weather.weathercode] || "Bedeckt";
                 
                 let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80"; 
-                document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('${bgUrl}')`;
+                document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
             } catch (e) {}
         }
         fetchWeather();
         setInterval(fetchWeather, 600000);
 
-        // News API
         async function fetchNews() {
             try {
                 const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml')}`);
