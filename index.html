@@ -2,9 +2,8 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>NexusAds | Digital Billboard Koblenz</title>
+    <title>Digital Billboard</title>
     <style>
-        /* GRUNDLAYOUT */
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
@@ -13,7 +12,6 @@
         
         .billboard { position: relative; width: 100vw; height: 100vh; }
         
-        /* LAYER-STEUERUNG */
         .ad-layer, .info-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: none; 
@@ -21,9 +19,7 @@
 
         .ad-layer { object-fit: contain; background: #000; }
 
-        /* WETTER-DESIGN (SCREENSHOT-STYLING) */
         .info-layer {
-            /* Hintergrundbild für den Wetter-Screen */
             background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), 
                         url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
@@ -39,46 +35,37 @@
 
         .location-header {
             display: flex; align-items: center;
-            font-size: 3.5rem; font-weight: 500; margin-bottom: 20px;
+            font-size: 3.5rem; font-weight: 500;
         }
 
         .location-header span { margin: 0 20px; font-weight: 200; opacity: 0.7; }
 
-        #clock { font-weight: 300; }
-
         #temp-big { 
             font-size: 16rem; font-weight: 400; line-height: 0.8; 
-            margin: 20px 0 20px -10px; 
+            margin: 40px 0 20px -10px; 
         }
 
         .weather-desc { font-size: 4.5rem; font-weight: 300; margin-bottom: 20px; }
 
         .weather-details { font-size: 2.2rem; font-weight: 300; opacity: 0.9; line-height: 1.4; }
 
-        /* BRANDING */
-        .branding {
-            position: absolute; bottom: 30px; right: 40px; z-index: 100;
-            color: white; font-weight: bold; letter-spacing: 4px; font-size: 1rem;
-            opacity: 0.4;
-        }
-
         .active { display: flex !important; }
         img.active { display: block !important; }
 
+        /* VOLLBILD BUTTON STYLING */
         #fs-btn {
             position: absolute; top: 20px; right: 20px; z-index: 1000;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3);
             border-radius: 50%; width: 50px; height: 50px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
-        #fs-btn svg { fill: white; width: 25px; height: 25px; }
     </style>
 </head>
 <body>
 
     <div class="billboard">
         <div id="fs-btn" onclick="goFull()">
-            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            <svg viewBox="0 0 24 24" width="25" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
 
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
@@ -91,35 +78,28 @@
         <div class="info-layer">
             <div class="info-content">
                 <div class="location-header">
-                    <strong>Koblenz</strong> <span>|</span> <div id="clock">00:00</div>
+                    <strong>Niederbachheim</strong> <span>|</span> <div id="clock">00:00</div>
                 </div>
-                
                 <div id="temp-big">--°</div>
-                
-                <div class="weather-desc" id="weather-text">Wird geladen...</div>
-                
+                <div class="weather-desc" id="weather-text">...</div>
                 <div class="weather-details" id="weather-sub">
                     ↑ --° / ↓ --° <br>
                     Gefühlt wie --°
                 </div>
             </div>
         </div>
-        
-        <div class="branding">NEXUS ADS DIGITAL</div>
     </div>
 
     <script>
         let current = 0;
         const elements = document.querySelectorAll('.ad-layer, .info-layer');
-        const duration = 8000; 
 
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
             current = (current + 1) % elements.length;
         }
-
-        setInterval(showNext, duration);
+        setInterval(showNext, 8000);
         showNext();
 
         function updateTime() {
@@ -133,17 +113,11 @@
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
                 const data = await res.json();
-                
-                const temp = Math.round(data.current_weather.temperature);
-                const max = Math.round(data.daily.temperature_2m_max[0]);
-                const min = Math.round(data.daily.temperature_2m_min[0]);
-                
-                document.getElementById('temp-big').textContent = `${temp}°`;
-                document.getElementById('weather-sub').innerHTML = `↑ ${max}° / ↓ ${min}° <br> Gefühlt wie ${temp}°`;
-                
-                const weatherMap = { 0: "Sonnig", 1: "Klar", 2: "Heiter", 3: "Bedeckt", 45: "Neblig", 61: "Regen" };
-                document.getElementById('weather-text').textContent = weatherMap[data.current_weather.weathercode] || "Bedeckt";
-            } catch (e) { document.getElementById('weather-text').textContent = "Koblenz"; }
+                document.getElementById('temp-big').textContent = Math.round(data.current_weather.temperature) + '°';
+                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° <br> Gefühlt wie ${Math.round(data.current_weather.temperature)}°`;
+                const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 61: "Regen" };
+                document.getElementById('weather-text').textContent = codes[data.current_weather.weathercode] || "Bedeckt";
+            } catch (e) { console.error(e); }
         }
         fetchWeather();
         setInterval(fetchWeather, 600000);
@@ -154,6 +128,16 @@
                 if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(console.error);
             }
         }
+
+        // Skript zum Verstecken des Buttons im Vollbild
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('fs-btn');
+            if (document.fullscreenElement) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'flex';
+            }
+        });
     </script>
 </body>
 </html>
