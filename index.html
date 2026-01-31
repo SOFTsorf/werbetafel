@@ -9,14 +9,15 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
             font-family: 'Segoe UI', Roboto, sans-serif; color: white; 
+            user-select: none; /* Verhindert Textmarkierung beim Tippen */
         }
         
-        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
+        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; cursor: pointer; }
         
         .ad-layer, .info-layer {
             position: absolute; 
             top: 0; left: 0; width: 100%; 
-            height: calc(100% - 80px); /* Platz für Ticker */
+            height: calc(100% - 80px); 
             display: none;
             box-sizing: border-box;
         }
@@ -34,7 +35,7 @@
 
         .info-content { text-shadow: 0 4px 30px rgba(0,0,0,0.9); width: 100%; }
 
-        /* --- RESPONSIVE SCHRIFTGRÖSSEN --- */
+        /* Schriftgrößen */
         .location-header { display: flex; align-items: center; font-size: 8vw; font-weight: 500; }
         @media (min-width: 768px) { .location-header { font-size: 3.5rem; } }
 
@@ -47,7 +48,7 @@
         .weather-details { font-size: 5vw; opacity: 0.9; line-height: 1.4; }
         @media (min-width: 768px) { .weather-details { font-size: 2.2rem; } }
 
-        /* TICKER */
+        /* Ticker */
         .news-ticker {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: #000; height: 80px;
@@ -70,27 +71,40 @@
         #fs-btn {
             position: absolute; top: 20px; right: 20px; z-index: 3000;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 50%; width: 50px; height: 50px; cursor: pointer;
+            border-radius: 50%; width: 60px; height: 60px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
         :fullscreen #fs-btn { display: none; }
+
+        /* HILFE MODAL STYLES */
+        #help-modal {
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); z-index: 5000; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center;
+        }
+        .modal-card {
+            background: #111; border: 4px solid #d4ff00; padding: 40px; border-radius: 20px;
+            max-width: 80%; box-shadow: 0 0 50px rgba(212, 255, 0, 0.2);
+        }
+        .modal-btn {
+            padding: 20px 60px; font-size: 2rem; font-weight: bold; border-radius: 10px; 
+            cursor: pointer; border: none; margin: 10px;
+        }
+        .btn-yes { background: #d4ff00; color: #000; }
+        .btn-no { background: #333; color: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="billboard">
-        <div id="fs-btn" onclick="goFull()">
-            <svg viewBox="0 0 24 24" width="25" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+    <div class="billboard" id="main-container">
+        <div id="fs-btn" onclick="goFull(event)">
+            <svg viewBox="0 0 24 24" width="30" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
 
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1n3D4UjOFsC79q_84j7xTerzJCTcN6rQN">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1mf257fiGBiJIpiK5ZGPal8fNrA4rFn7x">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1dSeQ4aQKBD4F5K-ch0iL3otBS6Croumk">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1MdvnP2ikiwsr2xIxmMRzdZ5O9Zc6mFLn">
-
+        <img class="ad-layer" src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=80">
+        <img class="ad-layer" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80">
         <div class="info-layer" id="weather-bg">
             <div class="info-content">
                 <div class="location-header">
@@ -104,11 +118,24 @@
 
         <div class="news-ticker">
             <div class="ticker-wrapper">
-                <div class="ticker-text" id="ticker-1">+++ Lade Nachrichten... +++</div>
-                <div class="ticker-text" id="ticker-2">+++ Lade Nachrichten... +++</div>
+                <div class="ticker-text" id="ticker-1">+++ Willkommen in Koblenz +++</div>
+                <div class="ticker-text" id="ticker-2">+++ Willkommen in Koblenz +++</div>
             </div>
         </div>
     </div>
+
+    <div id="help-modal">
+        <div class="modal-card">
+            <h2 style="font-size: 3.5rem; color: #d4ff00; margin-top: 0;">Hilfe holen</h2>
+            <p style="font-size: 1.8rem; margin-bottom: 40px;">Benötigst du Hilfe bei einem Produkt oder etwas anderem?</p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+                <button class="modal-btn btn-yes" onclick="confirmHelp(event)">JA, bitte!</button>
+                <button class="modal-btn btn-no" onclick="closeHelp(event)">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="help-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
     <script>
         let current = 0;
@@ -116,6 +143,7 @@
         const duration = 8000;
         let wakeLock = null;
 
+        // --- AUTOMATISCHER WECHSEL ---
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
@@ -124,6 +152,7 @@
         setInterval(showNext, duration);
         showNext();
 
+        // --- UHRZEIT ---
         function updateTime() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -131,16 +160,50 @@
         setInterval(updateTime, 1000);
         updateTime();
 
+        // --- HILFE LOGIK ---
+        const billboard = document.getElementById('main-container');
+        const modal = document.getElementById('help-modal');
+        const helpSound = document.getElementById('help-sound');
+
+        billboard.addEventListener('click', (e) => {
+            // Verhindert Öffnen, wenn nur der Vollbild-Knopf gedrückt wurde
+            if (e.target.closest('#fs-btn')) return;
+            modal.style.display = 'flex';
+        });
+
+        function closeHelp(e) {
+            e.stopPropagation();
+            modal.style.display = 'none';
+        }
+
+        function confirmHelp(e) {
+            e.stopPropagation();
+            helpSound.play().catch(err => console.log("Audio-Fehler:", err));
+            
+            // Visuelle Bestätigung im Modal
+            const card = document.querySelector('.modal-card');
+            const originalContent = card.innerHTML;
+            card.innerHTML = `<h2 style="color:#d4ff00; font-size:3rem;">Hilfe wurde gerufen!</h2><p style="font-size:1.5rem;">Ein Mitarbeiter wurde benachrichtigt.</p>`;
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                card.innerHTML = originalContent; // Reset für nächstes Mal
+            }, 3000);
+        }
+
+        // --- FULLSCREEN ---
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
         }
 
-        function goFull() {
+        function goFull(e) {
+            e.stopPropagation();
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().then(requestWakeLock);
             }
         }
 
+        // --- WETTER DATEN ---
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
@@ -157,6 +220,7 @@
         fetchWeather();
         setInterval(fetchWeather, 600000);
 
+        // --- NEWS DATEN ---
         async function fetchNews() {
             try {
                 const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml')}`);
