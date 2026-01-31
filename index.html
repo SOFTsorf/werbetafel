@@ -2,62 +2,61 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>NexusAds | Digital Billboard</title>
+    <title>NexusAds | Digital Billboard Koblenz</title>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
-        .billboard { position: relative; width: 100vw; height: 100vh; cursor: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: white; }
+        .billboard { position: relative; width: 100vw; height: 100vh; }
         
-        /* Die Bilder */
-        .ad-layer {
+        /* Bilder & Info-Layer - Harter Schnitt */
+        .ad-layer, .info-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: contain; opacity: 0;
-            animation: nexusLoop 32s infinite ease-in-out;
-        }
-        .ad-layer:nth-child(1) { animation-delay: 0s; }
-        .ad-layer:nth-child(2) { animation-delay: 8s; }
-        .ad-layer:nth-child(3) { animation-delay: 16s; }
-        .ad-layer:nth-child(4) { animation-delay: 24s; }
-
-        @keyframes nexusLoop {
-            0% { opacity: 0; }
-            3% { opacity: 1; }
-            22% { opacity: 1; }
-            25% { opacity: 0; }
-            100% { opacity: 0; }
+            display: none; /* Erstmal alles ausblenden */
         }
 
-        /* Vollbild Button oben rechts */
-        #fullscreen-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 5px;
-            padding: 8px;
-            cursor: pointer;
-            transition: opacity 0.3s;
-            display: flex;
-            align-items: center;
+        /* Styling für den Wetter/Zeit Layer */
+        .info-layer {
+            background: linear-gradient(135deg, #000000 0%, #00151a 100%);
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-        #fullscreen-btn:hover { background: rgba(0, 242, 255, 0.2); }
+
+        .info-content {
+            border: 2px solid #00f2ff;
+            background: rgba(0, 242, 255, 0.05);
+            padding: 50px 80px;
+            border-radius: 30px;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
+        }
+
+        #clock { font-size: 8em; font-weight: bold; letter-spacing: 5px; margin: 0; color: #fff; }
+        #weather { font-size: 3em; color: #00f2ff; margin-top: 20px; text-transform: uppercase; letter-spacing: 3px; }
+        .location { font-size: 1.5em; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+
+        /* Vollbild Button */
+        #fullscreen-btn {
+            position: absolute; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
         #fullscreen-btn svg { fill: #00f2ff; width: 20px; height: 20px; }
 
-        /* Branding */
         .branding {
             position: absolute; bottom: 25px; right: 30px; z-index: 100;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); padding: 12px 25px; 
-            border-radius: 50px; border: 1px solid rgba(0, 242, 255, 0.4);
-            color: #00f2ff; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+            color: #00f2ff; font-weight: bold; letter-spacing: 2px; font-size: 0.9em;
+            opacity: 0.6;
         }
+
+        /* Anzeige-Klasse */
+        .show { display: flex !important; }
+        .ad-layer.show { display: block !important; object-fit: contain; }
     </style>
 </head>
 <body>
 
-    <div class="billboard" id="main-content">
+    <div class="billboard">
         <div id="fullscreen-btn" onclick="toggleFullscreen()">
             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
@@ -66,50 +65,77 @@
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1Nc9w9Zw-7hhIFbb8Yorln7Jgjz67nog3">
         <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1MdvnP2ikiwsr2xIxmMRzdZ5O9Zc6mFLn">
+        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1PfqRsK5V2bXOFehKhahyvuU6WVWRtrt4">
+
+        <div class="info-layer">
+            <div class="info-content">
+                <div class="location">KOBLENZ</div>
+                <div id="clock">00:00</div>
+                <div id="weather">Lädt...</div>
+            </div>
+        </div>
         
+        <div class="branding">NEXUS ADS DIGITAL</div>
     </div>
 
     <script>
-        const btn = document.getElementById('fullscreen-btn');
-        let wakeLock = null;
+        // --- 1. SLIDESHOW LOGIK ---
+        let currentIndex = 0;
+        // Wir nehmen alle Bilder UND den Info-Layer in die Liste auf
+        const ads = document.querySelectorAll('.ad-layer');
+        const infoLayer = document.querySelector('.info-layer');
+        const allElements = [...ads, infoLayer]; 
 
-        // Vollbild-Logik
+        const displayTime = 8000; // 8 Sekunden pro Bild/Layer
+
+        function cycle() {
+            // Alle verstecken
+            allElements.forEach(el => el.classList.remove('show'));
+            
+            // Aktuelles zeigen
+            allElements[currentIndex].classList.add('show');
+            
+            // Index erhöhen
+            currentIndex = (currentIndex + 1) % allElements.length;
+        }
+
+        setInterval(cycle, displayTime);
+        cycle(); // Sofort starten
+
+        // --- 2. UHRZEIT ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- 3. WETTER KOBLENZ ---
+        async function updateWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true');
+                const data = await res.json();
+                document.getElementById('weather').textContent = `${Math.round(data.current_weather.temperature)}°C`;
+            } catch (e) {
+                document.getElementById('weather').textContent = "--°C";
+            }
+        }
+        updateWeather();
+        setInterval(updateWeather, 600000); // Alle 10 Min
+
+        // --- 4. VOLLBILD & WAKE LOCK ---
+        let wakeLock = null;
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Fehler beim Vollbild-Modus: ${err.message}`);
-                });
-                requestWakeLock(); // Wachhalten aktivieren bei Klick
-            }
-        }
-
-        // Icon verstecken, wenn im Vollbild
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                btn.style.opacity = '0';
-                btn.style.pointerEvents = 'none';
-            } else {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-            }
-        });
-
-        // Wake Lock (Display anlassen)
-        async function requestWakeLock() {
-            try {
+                document.documentElement.requestFullscreen();
                 if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
+                    navigator.wakeLock.request('screen').then(w => wakeLock = w);
                 }
-            } catch (err) {
-                console.log('WakeLock Error:', err);
             }
         }
-
-        // Automatisches Re-Aktivieren
-        document.addEventListener('visibilitychange', () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                requestWakeLock();
-            }
+        document.addEventListener('fullscreenchange', () => {
+            document.getElementById('fullscreen-btn').style.display = document.fullscreenElement ? 'none' : 'flex';
         });
     </script>
 </body>
