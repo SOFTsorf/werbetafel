@@ -12,11 +12,10 @@
         
         .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
         
-        /* Bilder und Wetter nehmen nur den Platz ÜBER dem Ticker ein */
         .ad-layer, .info-layer {
             position: absolute; 
             top: 0; left: 0; width: 100%; 
-            height: calc(100% - 80px); /* Ticker-Höhe abziehen */
+            height: calc(100% - 80px); /* Platz für den Ticker lassen */
             display: none;
         }
 
@@ -39,7 +38,6 @@
         .weather-desc { font-size: 4.5rem; font-weight: 300; margin-bottom: 20px; }
         .weather-details { font-size: 2.2rem; opacity: 0.9; }
 
-        /* TICKER DESIGN & GESCHWINDIGKEIT (30s = angenehm) */
         .news-ticker {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: #000; height: 80px;
@@ -59,7 +57,6 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* Fullscreen Button verstecken wenn aktiv */
         #fs-btn {
             position: absolute; top: 20px; right: 20px; z-index: 3000;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3);
@@ -97,8 +94,8 @@
 
         <div class="news-ticker">
             <div class="ticker-wrapper">
-                <div class="ticker-text" id="ticker-1">+++ Lade aktuelle Nachrichten aus aller Welt... +++</div>
-                <div class="ticker-text" id="ticker-2">+++ Lade aktuelle Nachrichten aus aller Welt... +++</div>
+                <div class="ticker-text" id="ticker-1">+++ Lade aktuelle Nachrichten... +++</div>
+                <div class="ticker-text" id="ticker-2">+++ Lade aktuelle Nachrichten... +++</div>
             </div>
         </div>
     </div>
@@ -107,7 +104,9 @@
         let current = 0;
         const elements = document.querySelectorAll('.ad-layer, .info-layer');
         const duration = 8000;
+        let wakeLock = null;
 
+        // --- NAVIGATION ---
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
@@ -123,6 +122,33 @@
         setInterval(updateTime, 1000);
         updateTime();
 
+        // --- WAKE LOCK (Bildschirm anlassen) ---
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock aktiv: Bildschirm bleibt an.');
+                }
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
+        }
+
+        // Wake Lock erneuern, wenn die Seite wieder sichtbar wird
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
+        // --- VOLLBILD ---
+        function goFull() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(requestWakeLock);
+            }
+        }
+
+        // --- DATEN FETCHEN ---
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
@@ -133,9 +159,10 @@
                 document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° | Gefühlt wie ${temp}°`;
                 const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 45: "Neblig", 61: "Regen", 95: "Gewitter" };
                 document.getElementById('weather-text').textContent = codes[code] || "Bedeckt";
-                let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format"; 
-                if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?q=80&w=1920&auto=format"; 
-                if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?q=80&w=1920&auto=format"; 
+                
+                let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80"; 
+                if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?auto=format&fit=crop&w=1920&q=80"; 
+                if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?auto=format&fit=crop&w=1920&q=80"; 
                 document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
             } catch (e) { console.error("Wetter-Fehler"); }
         }
@@ -158,12 +185,6 @@
         }
         fetchNews();
         setInterval(fetchNews, 1800000);
-
-        function goFull() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            }
-        }
     </script>
 </body>
 </html>
