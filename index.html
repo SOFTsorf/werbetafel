@@ -10,42 +10,39 @@
             font-family: 'Segoe UI', sans-serif; color: white; 
         }
         
-        .billboard { position: relative; width: 100vw; height: 100vh; }
+        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
         
+        /* Bilder und Wetter nehmen nur den Platz ÜBER dem Ticker ein */
         .ad-layer, .info-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; 
+            top: 0; left: 0; width: 100%; 
+            height: calc(100% - 80px); /* Ticker-Höhe abziehen */
             display: none;
         }
 
         .active { display: flex !important; }
         img.active { display: block !important; object-fit: contain; background: #000; }
 
-        /* FIX: INFO LAYER MIT ABSTAND NACH UNTEN GEGEN ÜBERLAPPUNG */
         .info-layer {
             background-size: cover;
             background-position: center;
             flex-direction: column;
-            justify-content: space-between; 
-            padding: 80px 80px 180px 80px; 
+            justify-content: center; 
+            padding: 60px;
             box-sizing: border-box;
         }
 
-        .info-content { text-shadow: 0 4px 30px rgba(0,0,0,0.9); z-index: 10; }
+        .info-content { text-shadow: 0 4px 30px rgba(0,0,0,0.9); }
         .location-header { display: flex; align-items: center; font-size: 3.5rem; font-weight: 500; }
         .location-header span { margin: 0 15px; font-weight: 200; opacity: 0.7; }
         #temp-big { font-size: 14rem; font-weight: 400; line-height: 0.8; margin: 40px 0 15px -10px; }
         .weather-desc { font-size: 4.5rem; font-weight: 300; margin-bottom: 20px; }
+        .weather-details { font-size: 2.2rem; opacity: 0.9; }
 
-        .weather-details { 
-            font-size: 2.2rem; font-weight: 300; opacity: 0.9; line-height: 1.4;
-            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px;
-            align-self: flex-start;
-        }
-
-        /* TICKER DESIGN & SPEED (15s) */
+        /* TICKER DESIGN & GESCHWINDIGKEIT (30s = angenehm) */
         .news-ticker {
-            position: absolute; bottom: 12px; left: 0; width: 100%;
-            background: rgba(0, 0, 0, 0.9); height: 80px;
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: #000; height: 80px;
             display: flex; align-items: center; overflow: hidden; z-index: 1500;
             border-top: 1px solid rgba(212, 255, 0, 0.5);
         }
@@ -53,7 +50,7 @@
         .ticker-wrapper { display: flex; white-space: nowrap; }
         .ticker-text {
             font-size: 2.2rem; font-weight: 400; padding-right: 100px;
-            animation: marquee 15s linear infinite; 
+            animation: marquee 30s linear infinite; 
             display: inline-block;
         }
 
@@ -62,23 +59,14 @@
             100% { transform: translateX(-100%); }
         }
 
-        .progress-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 12px;
-            background: rgba(0, 0, 0, 0.4); z-index: 2000;
-        }
-        
-        #progress-bar {
-            width: 0%; height: 100%;
-            background: #d4ff00;
-            box-shadow: 0 0 25px #d4ff00;
-        }
-
+        /* Fullscreen Button verstecken wenn aktiv */
         #fs-btn {
             position: absolute; top: 20px; right: 20px; z-index: 3000;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3);
             border-radius: 50%; width: 50px; height: 50px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
+        :fullscreen #fs-btn { display: none; }
     </style>
 </head>
 <body>
@@ -103,22 +91,15 @@
                 </div>
                 <div id="temp-big">--°</div>
                 <div class="weather-desc" id="weather-text">Lädt...</div>
-            </div>
-            <div class="weather-details" id="weather-sub">
-                ↑ --° / ↓ --° <br>
-                Gefühlt wie --°
+                <div class="weather-details" id="weather-sub">↑ --° / ↓ --°</div>
             </div>
         </div>
 
         <div class="news-ticker">
             <div class="ticker-wrapper">
-                <div class="ticker-text" id="ticker-1">+++ Lade Nachrichten aus aller Welt... +++</div>
-                <div class="ticker-text" id="ticker-2">+++ Lade Nachrichten aus aller Welt... +++</div>
+                <div class="ticker-text" id="ticker-1">+++ Lade aktuelle Nachrichten aus aller Welt... +++</div>
+                <div class="ticker-text" id="ticker-2">+++ Lade aktuelle Nachrichten aus aller Welt... +++</div>
             </div>
-        </div>
-
-        <div class="progress-container">
-            <div id="progress-bar"></div>
         </div>
     </div>
 
@@ -130,15 +111,6 @@
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
-
-            const pb = document.getElementById('progress-bar');
-            pb.style.transition = 'none';
-            pb.style.width = '0%';
-            setTimeout(() => {
-                pb.style.transition = `width ${duration}ms linear`;
-                pb.style.width = '100%';
-            }, 50);
-
             current = (current + 1) % elements.length;
         }
         setInterval(showNext, duration);
@@ -157,17 +129,13 @@
                 const data = await res.json();
                 const code = data.current_weather.weathercode;
                 const temp = Math.round(data.current_weather.temperature);
-                
                 document.getElementById('temp-big').textContent = temp + '°';
-                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° <br> Gefühlt wie ${temp}°`;
-                
+                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° | Gefühlt wie ${temp}°`;
                 const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 45: "Neblig", 61: "Regen", 95: "Gewitter" };
                 document.getElementById('weather-text').textContent = codes[code] || "Bedeckt";
-
                 let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format"; 
                 if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?q=80&w=1920&auto=format"; 
                 if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?q=80&w=1920&auto=format"; 
-                
                 document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
             } catch (e) { console.error("Wetter-Fehler"); }
         }
