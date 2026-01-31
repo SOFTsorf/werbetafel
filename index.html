@@ -7,7 +7,7 @@
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
-            font-family: 'Segoe UI', sans-serif; color: white; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; 
         }
         
         .billboard { position: relative; width: 100vw; height: 100vh; }
@@ -18,13 +18,11 @@
         }
 
         .active { display: flex !important; }
-        img.active { display: block !important; }
+        img.active { display: block !important; object-fit: cover; }
 
-        .ad-layer { object-fit: contain; background: #000; }
+        .ad-layer { background: #000; }
 
         .info-layer {
-            /* Fallback Bild, falls der JS-Wechsel hakt */
-            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             flex-direction: column;
@@ -52,7 +50,40 @@
 
         .weather-details { font-size: 2.2rem; font-weight: 300; opacity: 0.9; line-height: 1.4; }
 
-        /* NEON GELBER BALKEN FIX */
+        /* NACHRICHTEN TICKER */
+        .news-ticker {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 1500;
+            border-top: 1px solid rgba(212, 255, 0, 0.4);
+        }
+
+        .ticker-wrapper {
+            display: flex;
+            white-space: nowrap;
+        }
+
+        .ticker-text {
+            font-size: 2rem;
+            font-weight: 400;
+            padding-right: 100px;
+            animation: marquee 40s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* FORTSCHRITTSBALKEN */
         .progress-container {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 12px;
             background: rgba(0, 0, 0, 0.4);
@@ -61,8 +92,8 @@
         
         #progress-bar {
             width: 0%; height: 100%;
-            background: #d4ff00; /* Giftiges Neon Gelb */
-            box-shadow: 0 0 25px #d4ff00, 0 0 10px #ffffff;
+            background: #d4ff00; /* Neon Gelb */
+            box-shadow: 0 0 20px #d4ff00;
         }
 
         #fs-btn {
@@ -80,13 +111,8 @@
             <svg viewBox="0 0 24 24" width="25" fill="white"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
         </div>
 
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1ysOvcDBhLq6vnrDnDkJTvER3g7-IEF7W">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1zQ6ENSocy_Mev0fdTN_6faPhE42to6fT">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1n3D4UjOFsC79q_84j7xTerzJCTcN6rQN">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1mf257fiGBiJIpiK5ZGPal8fNrA4rFn7x">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1wOYo41iHaGbo31Qjm4v2-iqmz-yADpbc">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1dSeQ4aQKBD4F5K-ch0iL3otBS6Croumk">
-        <img class="ad-layer" src="https://lh3.googleusercontent.com/d/1MdvnP2ikiwsr2xIxmMRzdZ5O9Zc6mFLn">
+        <img class="ad-layer" src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1920&auto=format">
+        <img class="ad-layer" src="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1920&auto=format">
 
         <div class="info-layer" id="weather-bg">
             <div class="info-content">
@@ -94,11 +120,18 @@
                     <strong>Koblenz</strong> <span>|</span> <div id="clock">00:00</div>
                 </div>
                 <div id="temp-big">--°</div>
-                <div class="weather-desc" id="weather-text">Lädt...</div>
+                <div class="weather-desc" id="weather-text">Lädt Wetter...</div>
                 <div class="weather-details" id="weather-sub">
                     ↑ --° / ↓ --° <br>
                     Gefühlt wie --°
                 </div>
+            </div>
+        </div>
+
+        <div class="news-ticker">
+            <div class="ticker-wrapper">
+                <div class="ticker-text" id="ticker-1">+++ Lade Nachrichten aus aller Welt... +++</div>
+                <div class="ticker-text" id="ticker-2">+++ Lade Nachrichten aus aller Welt... +++</div>
             </div>
         </div>
 
@@ -110,8 +143,9 @@
     <script>
         let current = 0;
         const elements = document.querySelectorAll('.ad-layer, .info-layer');
-        const duration = 8000;
+        const duration = 10000; // 10 Sekunden pro Anzeige
 
+        // --- NAVIGATION & PROGRESS ---
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
@@ -119,6 +153,7 @@
             const pb = document.getElementById('progress-bar');
             pb.style.transition = 'none';
             pb.style.width = '0%';
+            
             setTimeout(() => {
                 pb.style.transition = `width ${duration}ms linear`;
                 pb.style.width = '100%';
@@ -129,6 +164,7 @@
         setInterval(showNext, duration);
         showNext();
 
+        // --- UHRZEIT ---
         function updateTime() {
             const now = new Date();
             document.getElementById('clock').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -136,6 +172,7 @@
         setInterval(updateTime, 1000);
         updateTime();
 
+        // --- WETTER (Koblenz) ---
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
@@ -149,45 +186,42 @@
                 const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 45: "Neblig", 61: "Regen", 95: "Gewitter" };
                 document.getElementById('weather-text').textContent = codes[code] || "Bedeckt";
 
-                // HINTERGRUND-BILD LOGIK (verbessert)
                 let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format"; 
                 if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?q=80&w=1920&auto=format"; 
                 if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?q=80&w=1920&auto=format"; 
                 
-                const bgElement = document.getElementById('weather-bg');
-                // Neues Image Objekt um sicherzustellen, dass das Bild geladen ist
-                const img = new Image();
-                img.src = bgUrl;
-                img.onload = () => {
-                    bgElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
-                };
+                document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
             } catch (e) { console.error("Wetter-Fehler"); }
         }
         fetchWeather();
         setInterval(fetchWeather, 600000);
 
-        // Auto-Update
-        let initialETag = null;
-        async function checkVersion() {
-            try {
-                const response = await fetch(window.location.href, { method: 'HEAD' });
-                const newETag = response.headers.get('Last-Modified') || response.headers.get('ETag');
-                if (initialETag && initialETag !== newETag) { window.location.reload(true); }
-                initialETag = newETag;
-            } catch (e) {}
-        }
-        setInterval(checkVersion, 30000); 
-        checkVersion();
+        // --- NEWS TICKER ---
+        async function fetchNews() {
+            const rssUrl = 'https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml';
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
+            try {
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    const newsString = data.items.slice(0, 12).map(item => item.title).join(' +++ ');
+                    const fullText = `+++ TOP NEWS: ${newsString} +++ `;
+                    document.getElementById('ticker-1').textContent = fullText;
+                    document.getElementById('ticker-2').textContent = fullText;
+                }
+            } catch (e) { console.error("News Fehler"); }
+        }
+        fetchNews();
+        setInterval(fetchNews, 1800000);
+
+        // --- FULLSCREEN & WAKE LOCK ---
         function goFull() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
                 if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(console.error);
             }
         }
-        document.addEventListener('fullscreenchange', () => {
-            document.getElementById('fs-btn').style.display = document.fullscreenElement ? 'none' : 'flex';
-        });
     </script>
 </body>
 </html>
