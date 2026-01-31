@@ -12,16 +12,12 @@
         
         .billboard { position: relative; width: 100vw; height: 100vh; }
         
-        /* HARTE ÜBERGÄNGE */
         .ad-layer, .info-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; /* Sofort weg */
+            display: none;
         }
 
-        .active { 
-            display: flex !important; /* Sofort da */
-        }
-        
+        .active { display: flex !important; }
         img.active { display: block !important; }
 
         .ad-layer { object-fit: contain; background: #000; }
@@ -55,14 +51,20 @@
 
         .weather-details { font-size: 2rem; font-weight: 300; opacity: 0.9; line-height: 1.3; }
 
-        /* FORTSCHRITTSBALKEN UNTEN */
+        /* VERBESSERTER BALKEN MIT BLUR & GLOW */
         .progress-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
-            background: rgba(255,255,255,0.1); z-index: 2000;
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px); /* Verschwimmt den Hintergrund unter dem Balken-Pfad */
+            z-index: 2000;
         }
+        
         #progress-bar {
             width: 0%; height: 100%;
-            background: rgba(255,255,255,0.6);
+            background: rgba(255, 255, 255, 0.8);
+            /* Glow Effekt */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 5px rgba(255, 255, 255, 1);
+            border-radius: 0 2px 2px 0;
         }
 
         #fs-btn {
