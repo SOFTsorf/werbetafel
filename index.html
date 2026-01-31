@@ -8,10 +8,12 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             background: #000; overflow: hidden; 
             font-family: 'Segoe UI', sans-serif; color: white; 
+            transition: filter 2s ease-in-out; /* Für den Night-Mode */
         }
         
         .billboard { position: relative; width: 100vw; height: 100vh; }
         
+        /* HARTE ÜBERGÄNGE */
         .ad-layer, .info-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: none;
@@ -31,9 +33,20 @@
             align-items: flex-start;
             padding: 80px;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
-        .info-content { text-shadow: 0 4px 25px rgba(0,0,0,0.6); }
+        /* Subtiler Ken-Burns-Effekt für das Wetter-Hintergrundbild */
+        .active#weather-bg {
+            animation: subtleZoom 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes subtleZoom {
+            from { transform: scale(1.0); }
+            to { transform: scale(1.1); }
+        }
+
+        .info-content { text-shadow: 0 4px 25px rgba(0,0,0,0.6); z-index: 10; }
 
         .location-header {
             display: flex; align-items: center;
@@ -51,20 +64,18 @@
 
         .weather-details { font-size: 2rem; font-weight: 300; opacity: 0.9; line-height: 1.3; }
 
-        /* VERBESSERTER BALKEN MIT BLUR & GLOW */
+        /* BALKEN MIT BLUR & GLOW */
         .progress-container {
             position: absolute; bottom: 0; left: 0; width: 100%; height: 8px;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px); /* Verschwimmt den Hintergrund unter dem Balken-Pfad */
+            backdrop-filter: blur(5px);
             z-index: 2000;
         }
         
         #progress-bar {
             width: 0%; height: 100%;
             background: rgba(255, 255, 255, 0.8);
-            /* Glow Effekt */
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 5px rgba(255, 255, 255, 1);
-            border-radius: 0 2px 2px 0;
         }
 
         #fs-btn {
@@ -73,9 +84,12 @@
             border-radius: 50%; width: 50px; height: 50px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
+
+        /* Night Mode Dimmer */
+        .dimmed { filter: brightness(0.6) sepia(0.1); }
     </style>
 </head>
-<body>
+<body id="main-body">
 
     <div class="billboard">
         <div id="fs-btn" onclick="goFull()">
@@ -93,7 +107,7 @@
         <div class="info-layer" id="weather-bg">
             <div class="info-content">
                 <div class="location-header">
-                    <strong>Koblenz</strong> <span>|</span> <div id="clock">00:00</div>
+                    <strong id="greeting">Koblenz</strong> <span>|</span> <div id="clock">00:00</div>
                 </div>
                 <div id="temp-big">--°</div>
                 <div class="weather-desc" id="weather-text">...</div>
@@ -133,7 +147,24 @@
 
         function updateTime() {
             const now = new Date();
+            const hour = now.getHours();
+            
+            // Begrüßungs-Logik
+            let greet = "Koblenz";
+            if (hour >= 5 && hour < 10) greet = "Guten Morgen, Koblenz";
+            else if (hour >= 10 && hour < 18) greet = "Schönen Tag in Koblenz";
+            else if (hour >= 18 && hour < 22) greet = "Guten Abend, Koblenz";
+            else greet = "Gute Nacht, Koblenz";
+            
+            document.getElementById('greeting').textContent = greet;
             document.getElementById('clock').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+            // Automatischer Dimmer (zwischen 21 und 5 Uhr)
+            if (hour >= 21 || hour < 5) {
+                document.getElementById('main-body').classList.add('dimmed');
+            } else {
+                document.getElementById('main-body').classList.remove('dimmed');
+            }
         }
         setInterval(updateTime, 1000);
         updateTime();
