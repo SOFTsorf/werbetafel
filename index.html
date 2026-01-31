@@ -10,59 +10,51 @@
             font-family: 'Segoe UI', sans-serif; color: white; 
         }
         
-        .billboard { position: relative; width: 100vw; height: 100vh; }
+        .billboard { position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column; }
         
         .ad-layer, .info-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; 
+            top: 0; left: 0; width: 100%; 
+            height: calc(100% - 80px); /* Platz für den Ticker lassen */
             display: none;
         }
 
         .active { display: flex !important; }
-        img.active { display: block !important; }
-
-        .ad-layer { object-fit: contain; background: #000; }
+        img.active { display: block !important; object-fit: contain; background: #000; }
 
         .info-layer {
-            /* Fallback Bild, falls der JS-Wechsel hakt */
-            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            padding: 80px;
+            justify-content: center; 
+            padding: 60px;
             box-sizing: border-box;
         }
 
-        .info-content { text-shadow: 0 4px 30px rgba(0,0,0,0.9); z-index: 10; }
-
-        .location-header {
-            display: flex; align-items: center;
-            font-size: 3.5rem; font-weight: 500;
-        }
-
+        .info-content { text-shadow: 0 4px 30px rgba(0,0,0,0.9); }
+        .location-header { display: flex; align-items: center; font-size: 3.5rem; font-weight: 500; }
         .location-header span { margin: 0 15px; font-weight: 200; opacity: 0.7; }
-
-        #temp-big { 
-            font-size: 14rem; font-weight: 400; line-height: 0.8; 
-            margin: 40px 0 15px -10px; 
-        }
-
+        #temp-big { font-size: 14rem; font-weight: 400; line-height: 0.8; margin: 40px 0 15px -10px; }
         .weather-desc { font-size: 4.5rem; font-weight: 300; margin-bottom: 20px; }
+        .weather-details { font-size: 2.2rem; opacity: 0.9; }
 
-        .weather-details { font-size: 2.2rem; font-weight: 300; opacity: 0.9; line-height: 1.4; }
-
-        /* NEON GELBER BALKEN FIX */
-        .progress-container {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 2000;
+        .news-ticker {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: #000; height: 80px;
+            display: flex; align-items: center; overflow: hidden; z-index: 1500;
+            border-top: 1px solid rgba(212, 255, 0, 0.5);
         }
-        
-        #progress-bar {
-            width: 0%; height: 100%;
-            background: #d4ff00; /* Giftiges Neon Gelb */
-            box-shadow: 0 0 25px #d4ff00, 0 0 10px #ffffff;
+
+        .ticker-wrapper { display: flex; white-space: nowrap; }
+        .ticker-text {
+            font-size: 2.2rem; font-weight: 400; padding-right: 100px;
+            animation: marquee 30s linear infinite; 
+            display: inline-block;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
 
         #fs-btn {
@@ -71,6 +63,7 @@
             border-radius: 50%; width: 50px; height: 50px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
+        :fullscreen #fs-btn { display: none; }
     </style>
 </head>
 <body>
@@ -95,15 +88,15 @@
                 </div>
                 <div id="temp-big">--°</div>
                 <div class="weather-desc" id="weather-text">Lädt...</div>
-                <div class="weather-details" id="weather-sub">
-                    ↑ --° / ↓ --° <br>
-                    Gefühlt wie --°
-                </div>
+                <div class="weather-details" id="weather-sub">↑ --° / ↓ --°</div>
             </div>
         </div>
 
-        <div class="progress-container">
-            <div id="progress-bar"></div>
+        <div class="news-ticker">
+            <div class="ticker-wrapper">
+                <div class="ticker-text" id="ticker-1">+++ Lade aktuelle Nachrichten... +++</div>
+                <div class="ticker-text" id="ticker-2">+++ Lade aktuelle Nachrichten... +++</div>
+            </div>
         </div>
     </div>
 
@@ -111,19 +104,12 @@
         let current = 0;
         const elements = document.querySelectorAll('.ad-layer, .info-layer');
         const duration = 8000;
+        let wakeLock = null;
 
+        // --- NAVIGATION ---
         function showNext() {
             elements.forEach(el => el.classList.remove('active'));
             elements[current].classList.add('active');
-
-            const pb = document.getElementById('progress-bar');
-            pb.style.transition = 'none';
-            pb.style.width = '0%';
-            setTimeout(() => {
-                pb.style.transition = `width ${duration}ms linear`;
-                pb.style.width = '100%';
-            }, 50);
-
             current = (current + 1) % elements.length;
         }
         setInterval(showNext, duration);
@@ -136,58 +122,69 @@
         setInterval(updateTime, 1000);
         updateTime();
 
+        // --- WAKE LOCK (Bildschirm anlassen) ---
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock aktiv: Bildschirm bleibt an.');
+                }
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
+        }
+
+        // Wake Lock erneuern, wenn die Seite wieder sichtbar wird
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
+        // --- VOLLBILD ---
+        function goFull() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(requestWakeLock);
+            }
+        }
+
+        // --- DATEN FETCHEN ---
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3567&longitude=7.5995&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
                 const data = await res.json();
                 const code = data.current_weather.weathercode;
                 const temp = Math.round(data.current_weather.temperature);
-                
                 document.getElementById('temp-big').textContent = temp + '°';
-                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° <br> Gefühlt wie ${temp}°`;
-                
+                document.getElementById('weather-sub').innerHTML = `↑ ${Math.round(data.daily.temperature_2m_max[0])}° / ↓ ${Math.round(data.daily.temperature_2m_min[0])}° | Gefühlt wie ${temp}°`;
                 const codes = { 0: "Sonnig", 1: "Heiter", 2: "Bewölkt", 3: "Bedeckt", 45: "Neblig", 61: "Regen", 95: "Gewitter" };
                 document.getElementById('weather-text').textContent = codes[code] || "Bedeckt";
-
-                // HINTERGRUND-BILD LOGIK (verbessert)
-                let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format"; 
-                if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?q=80&w=1920&auto=format"; 
-                if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?q=80&w=1920&auto=format"; 
                 
-                const bgElement = document.getElementById('weather-bg');
-                // Neues Image Objekt um sicherzustellen, dass das Bild geladen ist
-                const img = new Image();
-                img.src = bgUrl;
-                img.onload = () => {
-                    bgElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
-                };
+                let bgUrl = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80"; 
+                if (code >= 1 && code <= 3) bgUrl = "https://images.unsplash.com/photo-1534088568595-a066f710521e?auto=format&fit=crop&w=1920&q=80"; 
+                if (code >= 61) bgUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1f539cf?auto=format&fit=crop&w=1920&q=80"; 
+                document.getElementById('weather-bg').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('${bgUrl}')`;
             } catch (e) { console.error("Wetter-Fehler"); }
         }
         fetchWeather();
         setInterval(fetchWeather, 600000);
 
-        // Auto-Update
-        let initialETag = null;
-        async function checkVersion() {
+        async function fetchNews() {
+            const rssUrl = 'https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml';
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
             try {
-                const response = await fetch(window.location.href, { method: 'HEAD' });
-                const newETag = response.headers.get('Last-Modified') || response.headers.get('ETag');
-                if (initialETag && initialETag !== newETag) { window.location.reload(true); }
-                initialETag = newETag;
-            } catch (e) {}
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                if (data.status === 'ok') {
+                    const newsString = data.items.slice(0, 10).map(item => item.title).join(' +++ ');
+                    const fullText = `+++ NEWS: ${newsString} +++ `;
+                    document.getElementById('ticker-1').textContent = fullText;
+                    document.getElementById('ticker-2').textContent = fullText;
+                }
+            } catch (e) { console.error("News Fehler"); }
         }
-        setInterval(checkVersion, 30000); 
-        checkVersion();
-
-        function goFull() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-                if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(console.error);
-            }
-        }
-        document.addEventListener('fullscreenchange', () => {
-            document.getElementById('fs-btn').style.display = document.fullscreenElement ? 'none' : 'flex';
-        });
+        fetchNews();
+        setInterval(fetchNews, 1800000);
     </script>
 </body>
 </html>
